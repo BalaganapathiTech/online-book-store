@@ -1,0 +1,27 @@
+package com.book.Member.Entity;
+
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.validation.constraints.NotEmpty;
+
+@Getter
+@Embeddable
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Email {
+
+    @NotEmpty
+    @org.hibernate.validator.constraints.Email
+    @Column(name = "email", nullable = false, unique = true)
+    private String value;
+
+    public Email(String value) {
+        this.value = value;
+    }
+
+}

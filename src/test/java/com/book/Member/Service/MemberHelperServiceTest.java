@@ -1,0 +1,88 @@
+package com.book.Member.Service;
+
+import com.book.Member.Entity.Email;
+import com.book.Member.Entity.Member;
+import com.book.Member.Exception.MemberDuplicationException;
+import com.book.Member.Exception.MemberNotFoundException;
+import com.book.Member.Repository.MemberRepository;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MemberHelperServiceTest {
+
+    @InjectMocks
+    private MemberHelperService memberHelperService;
+    @Mock
+    private MemberRepository memberRepository;
+
+    private final String TEST_EMAIL = "test@test.com";
+
+
+    @Test(expected = MemberDuplicationException.class)
+    public void verifyEmailIsDuplicated_EmailIsDuplicated_MemberDuplicationException() {
+
+        //given
+        final Member member = new Member(new Email(TEST_EMAIL), null, null);
+        given(memberRepository.findByEmail(member.getEmail())).willReturn(member);
+
+        //when
+        memberHelperService.verifyEmailIsDuplicated(member.getEmail());
+
+        //then
+
+    }
+
+    @Test
+    public void verifyEmailIsDuplicated_EmailIsNotDuplicated_Void() {
+
+        //given
+        final Member member = new Member(new Email(TEST_EMAIL), null, null);
+        given(memberRepository.findByEmail(member.getEmail())).willReturn(null);
+
+        //when
+        memberHelperService.verifyEmailIsDuplicated(member.getEmail());
+
+        //then
+    }
+
+
+    @Test(expected = MemberNotFoundException.class)
+    public void findById_MemberDoesNotExist_MemberNotFoundException() {
+
+        //given
+        final long memberId = 0L;
+        given(memberRepository.findById(memberId)).willThrow(new MemberNotFoundException());
+
+        //when
+        memberHelperService.findById(memberId);
+
+        //then
+
+    }
+
+    @Test
+    public void findById_MemberExists_Member() {
+
+        //given
+        final Member mockMember = new Member(new Email(TEST_EMAIL), null, null);
+        given(memberRepository.findById(mockMember.getId())).willReturn(Optional.of(mockMember));
+
+        //when
+        final Member member = memberHelperService.findById(mockMember.getId());
+
+        //then
+        Assert.assertThat(member.getEmail(), is(member.getEmail()));
+
+    }
+
+}

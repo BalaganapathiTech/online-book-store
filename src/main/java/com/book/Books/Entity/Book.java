@@ -1,0 +1,73 @@
+package com.book.Books.Entity;
+
+
+import com.book.Books.DTO.BookCreateRequest;
+import com.book.order.Entity.Money;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.*;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.Assert;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter
+@Entity
+@Table(name = "book")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class
+Book {
+    @EmbeddedId
+    private BookId bookId;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Embedded
+    @Column(name = "price", nullable = false)
+    private Money price;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    private Book(String name, Money price) {
+        Assert.notNull(name, "name must not be null!");
+        Assert.notNull(price, "price must not be null!");
+        this.bookId = BookId.generate();
+        this.name = name;
+        this.price = price;
+    }
+
+    @Builder
+    public Book(BookId bookId, String name, Money price, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.bookId = bookId;
+        this.name = name;
+        this.price = price;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static Book of(BookCreateRequest request) {
+        return new Book(request.getName(), request.getPrice());
+    }
+
+    public Money calculate(int quantity) {
+        return Money.of(price.getValue() * quantity);
+    }
+    public void update(String name, Money price) {
+        Assert.notNull(name, "name must not be null!");
+        Assert.notNull(price, "price must not be null!");
+
+        this.name = name;
+        this.price = price;
+    }
+}
