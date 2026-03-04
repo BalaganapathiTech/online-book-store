@@ -50,8 +50,8 @@ Each module contains:
 ### 1. Clone the project
 
 ```
-git clone https://github.com/your-username/book-ordering-system.git
-cd book-ordering-system
+git clone https://github.com/BalaganapathiTech/online-book-store.git
+cd online-book-store
 ```
 
 ### 2. Build
